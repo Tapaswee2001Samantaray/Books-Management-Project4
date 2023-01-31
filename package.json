@@ -11,6 +11,10 @@
     "type": "git",
     "url": "git+https://github.com/Tapaswee2001Samantaray/Books-Management.git"
   },
+  "engines" : { 
+    "npm" : ">=8.0.0 <9.0.0",
+    "node" : ">=16.0.0 <17.0.0"
+  },
   "author": "Tapaswee Samantaray , Sagar Maan , Soumya Ranjan Pradhan , Ashanur Hossain",
   "license": "ISC",
   "bugs": {
