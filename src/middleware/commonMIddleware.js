@@ -1,15 +1,13 @@
+const JWT = require("jsonwebtoken");
+const {isValidObjectId} = require("mongoose");
+
 const userModel = require("../model/userModel");
 const bookModel = require("../model/bookModel");
 
-const JWT = require("jsonwebtoken");
-const {isValidObjectId} = require("mongoose");
 
 
 
 // ======================================= AUTHENTICATION =============================================//
-
-
-
 const isAuthenticated = async function ( req , res , next ) {
     try {
         let token = req.headers['x-api-key']; 
@@ -20,7 +18,6 @@ const isAuthenticated = async function ( req , res , next ) {
 
         JWT.verify( token, "project4grp14", function ( err , decodedToken ) {
             if (err) {
-
                 if (err.name === 'JsonWebTokenError') {
                     return res.status(401).send({ status: false, message: "invalid token" });
                 }
@@ -31,45 +28,38 @@ const isAuthenticated = async function ( req , res , next ) {
                     return res.send({ msg: err.message });
                 }
             } else {
-                req.token = decodedToken
-                next()
+                req.token = decodedToken;
+                next();
             }
         });
 
     } catch (error) {
-        res.status(500).send({ status: 'error', error: error.message })
+        res.status(500).send({ status: 'error', error: error.message });
     }
 }
 
 
 
 // =========================================== AUTHORISATION ===========================================//
-
-
-
 const isAuthorized = async function ( req , res , next ) {
     try {
         const loggedUserId = req.token.userId;
 
         if (req.originalUrl === "/books") {
             let userId = req.body.userId;
-            
+        
             if (userId && typeof userId != "string") {
                 return res.status(400).send({ status: false, message: "userId must be in string." });
             }
-
             if (!userId || !userId.trim()) {
                 return res.status(400).send({ status: false, message: "userId must be present for Authorization." });
             }
-
             userId = userId.trim();
-
             if (!isValidObjectId(userId)) {
                 return res.status(400).send({ status: false, message: "Invalid user id" });
             }
 
             const userData = await userModel.findById(userId);
-
             if (!userData) {
                 return res.status(404).send({ status: false, message: "The user id does not exist" });
             }
@@ -85,13 +75,11 @@ const isAuthorized = async function ( req , res , next ) {
             if (!bookId) {
                 return res.status(400).send({ status: false, message: "book id is mandatory" });
             }
-
             if (!isValidObjectId(bookId)) {
                 return res.status(400).send({ status: false, message: "Invalid Book ID" });
             }
 
             let checkBookId = await bookModel.findById(bookId);
-
             if (!checkBookId) {
                 return res.status(404).send({ status: false, message: "Data Not found with this book id, Please enter a valid book id" });
             }
