@@ -3,7 +3,7 @@ const AWS = require("aws-sdk");
 
 AWS.config.update({
     accessKeyId : "AKIAY3L35MCRZNIRGT6N",
-    secretAccessKeyId : "9f+YFBVcSjZWM6DG9R4TUN8k8TGe4X+lXmO4jPiU",
+    secretAccessKey : "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",
     region : "ap-south-1"
 })
 
@@ -17,17 +17,17 @@ let uploadFile = async (file) => {
     var uploadParams = {
         ACL : "public-read",
         Bucket : "classroom-training-bucket",
-        Key : "project-4-group-14/" + file.originalname,
+        Key : "projectFourteen/" + file.originalname,
         Body : file.buffer
     }
 
     s3.upload(uploadParams , function(error, data){
         if(error){
-            return reject({"error":error})
+            return reject({error:error})
         }
         console.log(data)
         console.log("File uploaded successfully")
-        return resolve(data.location)
+        return resolve(data.Location)
     })
     })
 }

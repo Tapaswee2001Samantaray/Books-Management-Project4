@@ -103,12 +103,10 @@ const createBook = async function (req, res) {
         }
 
         let files = req.files
-        
         if (files && files.length > 0) {
             let uploadFileURL = await uploadFile(files[0])
             body.bookCover = uploadFileURL
-            const bookList = await bookModel.create(body);
-           
+            
             const uniqueCover = await bookModel.findOne({ bookCover: uploadFileURL })
             if (uniqueCover) {
                 return res.status(400).send({ status: false, message: "Book cover is already exist." })
