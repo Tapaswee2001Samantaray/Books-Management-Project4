@@ -7,12 +7,14 @@ const { isValidObjectId } = require("mongoose");
 const { validateISBN } = require("../validator/validator.js");
 
 
+const {uploadFile} = require('../AWS/awsConfiguration')
+
 
 // ===================================== Create Books =====================================================//
 
 
 
-const createBook = async function ( req , res ) {
+const createBook = async function (req, res) {
     try {
         let body = req.body;
         let { title, excerpt, ISBN, category, subcategory, releasedAt } = body;
@@ -100,6 +102,22 @@ const createBook = async function ( req , res ) {
 
         }
 
+        let files = req.files
+        
+        if (files && files.length > 0) {
+            let uploadFileURL = await uploadFile(files[0])
+            body.bookCover = uploadFileURL
+            const bookList = await bookModel.create(body);
+           
+            const uniqueCover = await bookModel.findOne({ bookCover: uploadFileURL })
+            if (uniqueCover) {
+                return res.status(400).send({ status: false, message: "Book cover is already exist." })
+            }
+            
+        } else {
+            return res.status(400).send({ status: false, message: "No file found" })
+        }
+
         const bookList = await bookModel.create(body);
 
         res.status(201).send({ status: true, message: "Success", data: bookList });
@@ -114,7 +132,7 @@ const createBook = async function ( req , res ) {
 
 
 
-const getBooks = async function ( req , res ) {
+const getBooks = async function (req, res) {
     try {
         let data = req.query;
         const { userId, category, subcategory } = data;
@@ -133,7 +151,7 @@ const getBooks = async function ( req , res ) {
         }
 
         const bookDetails = await bookModel.find({ ...data, isDeleted: false }).sort({ title: 1 }).select({ isDeleted: 0, createdAt: 0, updatedAt: 0, __v: 0, ISBN: 0, subcategory: 0 });
-       
+
         if (bookDetails.length == 0) {
             return res.status(404).send({ status: false, message: "Data not found or data already deleted." });
         }
@@ -163,7 +181,7 @@ const getBookById = async function (req, res) {
         }
 
         let getBookData = await bookModel.findOne({ _id: bookId, isDeleted: false }).select({ __v: 0 });
-       
+
         if (!getBookData) {
             return res.status(404).send({ status: false, message: "No book exist with this id or it might be deleted." });
         }
@@ -212,9 +230,9 @@ const updateBooks = async function (req, res) {
                 }
 
                 let trimTitle = title.toLowerCase().trim();
-               
+
                 const checkTitle = await bookModel.findOne({ title: trimTitle });
-               
+
                 if (checkTitle) {
                     return res.status(400).send({ status: false, message: `The title ${trimTitle} is already is in use for a Book.Try another one.` });
                 }
@@ -301,7 +319,7 @@ const updateBooks = async function (req, res) {
 
 
 
-const deleteBookById = async function ( req , res ) {
+const deleteBookById = async function (req, res) {
     try {
         let bookId = req.params.bookId;
         let deleteByBookId = await bookModel.findOneAndUpdate(
