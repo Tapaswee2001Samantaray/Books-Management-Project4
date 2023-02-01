@@ -7,7 +7,6 @@ const reviewModel = require("../model/reviewModel");
 const { validateISBN } = require("../validator/validator.js");
 const {uploadFile} = require("../AWS/awsConfiguration");
 
-
 // ===================================== Create Books =====================================================//
 const createBook = async function (req, res) {
     try {
@@ -77,6 +76,7 @@ const createBook = async function (req, res) {
         let trimReleasedAt = releasedAt.trim();
         if (moment(trimReleasedAt, "YYYY-MM-DD").format("YYYY-MM-DD") !== trimReleasedAt) {
             return res.status(400).send({ status: false, message: "Please enter the Date in the format of 'YYYY-MM-DD'." });
+<<<<<<< HEAD
         }
 
         let files = req.files
@@ -91,6 +91,8 @@ const createBook = async function (req, res) {
             
         } else {
             return res.status(400).send({ status: false, message: "No file found" })
+=======
+>>>>>>> f8ee648fe1902963e9753627124eb1429ec60344
         }
 
         const bookList = await bookModel.create(body);

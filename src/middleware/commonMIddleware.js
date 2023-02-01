@@ -1,6 +1,3 @@
-const JWT = require("jsonwebtoken");
-const {isValidObjectId} = require("mongoose");
-
 const userModel = require("../model/userModel");
 const bookModel = require("../model/bookModel");
 
