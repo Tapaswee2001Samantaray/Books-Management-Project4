@@ -1,3 +1,5 @@
+const JWT = require("jsonwebtoken");
+
 const userModel = require("../model/userModel");
 const bookModel = require("../model/bookModel");
 
